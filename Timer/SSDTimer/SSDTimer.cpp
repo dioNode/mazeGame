@@ -1,9 +1,14 @@
 #include "SSDTimer.h"
 
-
 SSDTimer::SSDTimer() {
-  ssdPins = deSsdPins;
-  digitSelect = deDigitSelect;
+  int tempssd[8] = deSsdPins;
+  int tempdig[4] = deDigitSelect;
+  for (int pin = 0; pin < 8; pin++) {
+    if (pin < 4) {
+      digitSelect[pin] = tempdig[pin];
+    }
+    ssdPins[pin] = tempssd[pin];
+  }
   for (int pin = 0; pin < 8; pin++) {
     if (pin < 4) {
       pinMode(digitSelect[pin], OUTPUT);
