@@ -1,3 +1,6 @@
+#include <math.h>
+#define _USE_MATH_DEFINES
+
 // Analog input
 int pinX = 1;
 int pinY = 2;
@@ -9,12 +12,10 @@ int pinJoyY = 5;
 int resetPin = 4;
 
 // Joystick variables
-int horizontalMovement = 0;
-int verticalMovement = 0;
-int lastMove = 0; // 0=still, 1=up, 2=down, 3=left, 4=right
-int currentMove = 0;
-const int JOYSTICKHIGH = 1000;
-const int JOYSTICKLOW  = 20;
+const float JOYDELAY = 3000;
+const int JOYSTICKTHRESH = 1000;
+const int JOYMIDVALUE = 510;
+float joystickCounter = JOYDELAY;
 
 // Accelerometer variables
 int baseX = 0;
@@ -42,43 +43,50 @@ void loop() {
   while (Serial.available() == 0);
 
   //processAccelerometer();
+
   processJoystick();
+  if (joystickCounter < JOYDELAY) {
+    //processJoystick();
+    joystickCounter++;
+  }
   
 }
 
-void processJoystick() {
-  int x = analogRead(pinJoyX);
-  int y = analogRead(pinJoyY);
-  if (x > JOYSTICKHIGH) {
-    horizontalMovement = 1;
-  } else if (x < JOYSTICKLOW) {
-    horizontalMovement = -1;
-  } else {
-    horizontalMovement = 0;
-  }
+void displayJoyData(int angle) {
+  
+  if (angle > 45) {
+      if (angle < 135) {
+        Serial.println("Right");
+      } else if (angle < 225) {
+        Serial.println("Down");
+      } else if (angle < 315) {
+        Serial.println("Left");
+      } else {
+        Serial.println("Up");
+      } 
+    } else {
+    
+      Serial.println("Up");
+    }
 
-  if (y > JOYSTICKHIGH) {
-    verticalMovement = 1;
-  } else if (y < JOYSTICKLOW) {
-    verticalMovement = -1;
-  } else {
-    verticalMovement = 0;
-  }
-  displayJoyData();
 }
 
-void displayJoyData() {
-  if (horizontalMovement == 1) {
-    Serial.print("right");
-  } else if (horizontalMovement == -1) {
-    Serial.print("left");
+void processJoystick() {
+  float x = analogRead(pinJoyX) - JOYMIDVALUE;
+  float y = analogRead(pinJoyY) - JOYMIDVALUE;
+
+  float norm = sqrt(sq(x)+sq(y));
+  //Serial.println(norm);
+  if (norm > 500 && joystickCounter == JOYDELAY) {
+    float angle = atan(y/x)*360/(2*M_PI);
+    if (x<0) {
+      angle += 180;
+    } else if (y<0 && x>0) {
+      angle += 360;
+    }
+    joystickCounter = 0;
+    displayJoyData(angle);
   }
-  if (verticalMovement == 1) {
-    Serial.print("up");
-  } else if (verticalMovement == -1) {
-    Serial.print("down");
-  }
-  Serial.println();
 }
 
 void processAccelerometer() {
@@ -112,4 +120,3 @@ void processAccelerometer() {
   
   printData(adjustedX, adjustedY, adjustedZ, status, "\t","\n");
 }
-
