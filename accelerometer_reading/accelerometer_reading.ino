@@ -1,3 +1,6 @@
+#include <math.h>
+#define _USE_MATH_DEFINES
+
 // Analog input
 int pinX = 1;
 int pinY = 2;
@@ -9,12 +12,10 @@ int pinJoyY = 5;
 int resetPin = 4;
 
 // Joystick variables
-int horizontalMovement = 0;
-int verticalMovement = 0;
-int lastMove = 0; // 0=still, 1=up, 2=down, 3=left, 4=right
-int currentMove = 0;
-const int JOYSTICKHIGH = 1000;
-const int JOYSTICKLOW  = 20;
+int joyDirection = 0;   // 0=stop, 1=up, 2=down, 3=left, 4=right
+//String[5] joyDirectionString = {"Stop", "Up", "Down", "Left", "Right"};
+const int JOYSTICKTHRESH = 1000;
+const int JOYMIDVALUE = 510;
 
 // Accelerometer variables
 int baseX = 0;
@@ -47,38 +48,28 @@ void loop() {
 }
 
 void processJoystick() {
-  int x = analogRead(pinJoyX);
-  int y = analogRead(pinJoyY);
-  if (x > JOYSTICKHIGH) {
-    horizontalMovement = 1;
-  } else if (x < JOYSTICKLOW) {
-    horizontalMovement = -1;
-  } else {
-    horizontalMovement = 0;
-  }
+  float x = analogRead(pinJoyX) - JOYMIDVALUE;
+  float y = analogRead(pinJoyY) - JOYMIDVALUE;
 
-  if (y > JOYSTICKHIGH) {
-    verticalMovement = 1;
-  } else if (y < JOYSTICKLOW) {
-    verticalMovement = -1;
-  } else {
-    verticalMovement = 0;
+  float norm = sqrt(sq(x)+sq(y));
+  //Serial.println(norm);
+  if (norm > 500) {
+    float angle = atan(y/x)*360/(2*M_PI);
+    
+    Serial.print("Angle: ");
+    Serial.println(angle);
   }
-  displayJoyData();
+  
+  Serial.print(x);
+  Serial.print("\t");
+  Serial.println(y);
+  //displayJoyData();
 }
 
 void displayJoyData() {
-  if (horizontalMovement == 1) {
-    Serial.print("right");
-  } else if (horizontalMovement == -1) {
-    Serial.print("left");
-  }
-  if (verticalMovement == 1) {
-    Serial.print("up");
-  } else if (verticalMovement == -1) {
-    Serial.print("down");
-  }
-  Serial.println();
+  
+  
+
 }
 
 void processAccelerometer() {
