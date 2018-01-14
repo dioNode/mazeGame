@@ -71,11 +71,50 @@ class SAMazeModel {
   int mazeMatrix[8][8];  // Stores the maze representation
 
   void movePlayerUp() {
+    if (playerPosition.y == 0) {
+      return;
+    }
     if (wallAt(playerPosition.x, playerPosition.y-1)) {
       // Wall at this location
     } else {
       // No wall at this location
       playerPosition.y--;
+    }
+  }
+
+  void movePlayerDown() {
+    if (playerPosition.y == 7) {
+      return;
+    }
+    if (wallAt(playerPosition.x, playerPosition.y+1)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.y++;
+    }
+  }
+
+  void movePlayerLeft() {
+    if (playerPosition.x == 0) {
+      return;
+    }
+    if (wallAt(playerPosition.x-1, playerPosition.y)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.x--;
+    }
+  }
+
+  void movePlayerRight() {
+    if (playerPosition.x == 7) {
+      return;
+    }
+    if (wallAt(playerPosition.x+1, playerPosition.y)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.x++;
     }
   }
 
@@ -97,33 +136,6 @@ class SAMazeModel {
       }
     }
 
-  void movePlayerDown() {
-    if (wallAt(playerPosition.x, playerPosition.y+1)) {
-      // Wall at this location
-    } else {
-      // No wall at this location
-      playerPosition.y++;
-    }
-  }
-
-  void movePlayerLeft() {
-    if (wallAt(playerPosition.x-1, playerPosition.y)) {
-      // Wall at this location
-    } else {
-      // No wall at this location
-      playerPosition.x--;
-    }
-  }
-
-  void movePlayerRight() {
-    if (wallAt(playerPosition.x+1, playerPosition.y)) {
-      // Wall at this location
-    } else {
-      // No wall at this location
-      playerPosition.x++;
-    }
-  }
-
   /*
    * Checks the matrix for a wall at the specified position
    */
@@ -132,17 +144,21 @@ class SAMazeModel {
   }
 
   /*
-   * Moves the player to an empty spot.
+   * Moves the player to an empty spot in one of the corners.
    */
   void spawnPlayer() {
     if (mazeMatrix[0][0] == 0) {
       playerPosition = {0, 0};
+      return;
     } else if (mazeMatrix[7][0] == 0) {
       playerPosition = {7, 0};
+      return;
     } else if (mazeMatrix[0][7] == 0) {
       playerPosition = {0, 7};
+      return;
     } else if (mazeMatrix[7][7] == 0) {
       playerPosition = {7, 7};
+      return;
     }
   }
 
@@ -169,11 +185,22 @@ class SAMazeModel {
    * maze - the array of bytes to save maze information to for displaying.
    */
   void saveMaze(byte maze[8]) {
+
+    int newMazeMatrix[8][8];
+
+    for (int x = 0; x < 8; x++) {
+      for (int y = 0; y < 8; y++) {
+        newMazeMatrix[x][y] = mazeMatrix[x][y];
+      }
+    }
+
+    newMazeMatrix[playerPosition.x][playerPosition.y] = 1;
+    
     for (int x = 0; x < 8; x++) {
       byte row = 0;
       for (int y = 0; y < 8; y++) {
         row = row << 1;
-        row |= mazeMatrix[x][y];
+        row |= newMazeMatrix[x][y];
       }
       maze[x] = row;
     }
@@ -185,7 +212,13 @@ class SAMazeModel {
   void printMaze(byte maze[8]) {
     Serial.println();
     for (int row = 0; row < 8; row++) {
-      Serial.println(maze[row], BIN);
+      for(byte mask = 0x80; mask; mask >>= 1){
+       if(mask  & maze[row])
+           Serial.print('1');
+       else
+           Serial.print('0');
+     }
+     Serial.println();
     }
     Serial.println();
   }
