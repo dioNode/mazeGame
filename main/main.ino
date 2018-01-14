@@ -1,8 +1,10 @@
 #include "LedControl.h"
+#include "SSDTimer.h"
 
 LedControl lc=LedControl(12,11,10,1);  // Pins: DIN,CLK,CS, # of Display connected
-
+SSDTimer timer = SSDTimer();
 unsigned long delayTime=300;  // Delay between Frames
+unsigned long lastTick;
 
 void setup() {
   lc.shutdown(0,false);  // Wake up displays
@@ -11,6 +13,7 @@ void setup() {
   lc.setIntensity(1,10);
   lc.clearDisplay(0);  // Clear Displays
   lc.clearDisplay(1);
+  lastTick = millis();
   playFrame();
 }
 
@@ -26,23 +29,18 @@ byte mazeWalls[] {
 };
 
 void insertDoor(int wall, int space) {
-  lateral = wall%2==1;
   switch (wall) {
     case 0:
       mazeWalls[1] = mazeWalls[1] ^ (1 << space);
-      entranceWalls[0] = 0;
       break;
     case 1:
       mazeWalls[space] = mazeWalls[space] & B11111110; 
-      entranceWalls[0] = 1;
       break;
     case 2:
       mazeWalls[7] = mazeWalls[7] ^ (1 << space);
-      entranceWalls[0] = 2;
       break;
     case 3:
       mazeWalls[space] = mazeWalls[space] & B01111111;
-      entranceWalls[0] = 3;
       break;
     }
   }
@@ -103,8 +101,14 @@ void genInlineMaze() {
   }
 
 void loop() {
-  while () {
-    
+  unsigned long endTime;
+  unsigned long startTime = millis();
+  playFrame();
+  while (true) {
+    timer.updateTime(); 
     }
-  
+  endTime = millis();
+  while (true) {
+    timer.displayTime((int)(endTime-startTime));
+    }
 }
