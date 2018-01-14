@@ -1,10 +1,11 @@
 # LHS
 
+<BLANK> - 
 5V - 
 RES - N/A
 3.3V - 
-5V - 
-GND - 
+5V - LEDMATRIX/VCC
+GND - LEDMATRIX/GND
 GND - 
 VIN - 
 
@@ -22,9 +23,9 @@ SDA -
 AREF - 
 GND - 
 13 - 
-12 - 
-11 - 
-10 - 
+12 - LEDMATRIX/DIN
+11 - LEDMATRIX/CLK
+10 - LEDMATRIX/CS
 9 - SSD/DP
 8 - SSD/G
 7 - SSD/F
