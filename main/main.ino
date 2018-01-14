@@ -11,19 +11,23 @@ int pinJoyY = 18;
 
 ///////////////////////////////////////// JOYSTICK //////////////////////////////////////////
 int displayJoyData(int angle) {
-  
+  Serial.println(angle);
   if (angle > 45) {
       if (angle < 135) {
         // Right
-        return 4;
+        Serial.println('r');
+        return 3;
       } else if (angle < 225) {
         // Down
+        Serial.println('d');
         return 2;
       } else if (angle < 315) {
         // Left
-        return 3;
+        Serial.println('l');
+        return 4;
       } else {
         // Up
+        Serial.println('u');
         return 1;
       } 
     } else {
@@ -118,8 +122,9 @@ class SAMazeModel {
     }
   }
 
-  void movePlayer() {
+  bool movePlayer() {
     int dir = processJoystick();
+    Serial.println(dir);
     switch (dir) {
       case 1:
         movePlayerUp();
@@ -133,7 +138,10 @@ class SAMazeModel {
       case 4:
         movePlayerRight();
         break;
+      default:
+        return false;
       }
+      return true;
     }
 
   /*
@@ -176,6 +184,12 @@ class SAMazeModel {
           mazeMatrix[x][y] = 0;
         }
       }
+    }
+    for (int row = 0; row < 8; row++) {
+      for (int col = 0; col < 8; col++) {
+        Serial.print(mazeMatrix[row][col]);
+      }
+      Serial.print('\n');
     }
   }
 
@@ -237,6 +251,7 @@ void setup() {
   pinMode(pinJoyX, INPUT);
   pinMode(pinJoyY, INPUT);
   playFrame();
+  Serial.begin(9600);
 }
 
 byte mazeWalls[] {
@@ -311,9 +326,9 @@ void playFrame() {
     }
 }
 
-void updateDisplay() {
+void updateDisplay(char src[8]) {
   for (int i = 0; i < 8; i++) {
-    lc.setRow(0, i, mazeWalls[i]);
+    lc.setRow(0, i, src[i]);
     }
   }
 
@@ -324,7 +339,7 @@ void genInlineMaze() {
   }
 
 void togglePlayerPosition(int x, int y) {
-    mazeWalls[x] ^= (1<<y);
+    mazeWalls[x] ^= (1<<(7-y));
   }
 
 SAMazeModel player = SAMazeModel();
@@ -335,13 +350,22 @@ void loop() {
   playFrame();
   player.loadMaze(mazeWalls);
   player.spawnPlayer();
+  char output[8];
+  int x = 0;
+  player.saveMaze(output);
+  player.printMaze(output);
   while (true) { // while the game is still going
-    if (millis()-lastTick > 500) {
-      if (millis()-lastTick > 250) {
-        togglePlayerPosition(player.playerPosition.x, player.playerPosition.y);
-        }
-      updateDisplay();
+    if (millis()-lastTick > 100) {
       player.movePlayer();
+      if (x == 0) {
+        player.saveMaze(output);
+        updateDisplay(output);
+        x^=1;
+        }
+      else {
+        updateDisplay(mazeWalls);
+        x^=1;
+        }
       lastTick = millis();
       }    
     timer.updateTime(); 
