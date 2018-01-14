@@ -1,23 +1,3 @@
-
-// Analog input
-int pinX = 1;
-int pinY = 2;
-int pinZ = 3;
-
-// Digital input
-int resetPin = 4;
-
-// Accelerometer variables
-int baseX = 0;
-int baseY = 0;
-int baseZ = 0;
-
-void setup() {
-  Serial.begin(9600);
-  pinMode(resetPin, INPUT);
-  Serial.println("Finished setup");
-}
-
 void printData(int x, int y, int z, String motion, String indentor, String newLine) {
   Serial.print(x);
   Serial.print(indentor);
@@ -30,13 +10,8 @@ void printData(int x, int y, int z, String motion, String indentor, String newLi
   delay(50);
 }
 
-void loop() {
-  //while (Serial.available() == 0);
-  processAccelerometer();
-  
-}
 
-void processAccelerometer() {
+String processAccelerometer() {
   int x = analogRead(pinX);
   int y = analogRead(pinY);
   int z = analogRead(pinZ);
@@ -61,11 +36,9 @@ void processAccelerometer() {
 
   if (adjustedY > 120) {
     status = "Swipe right";
-    printData(adjustedX, adjustedY, adjustedZ, status, "\t","\n");
   } else if (adjustedY < -120) {
     status = "Swipe left";
-    printData(adjustedX, adjustedY, adjustedZ, status, "\t","\n");
   }
   
-  
+  return status;
 }
