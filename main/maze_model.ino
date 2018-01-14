@@ -2,6 +2,30 @@
  * Maze Model
  */
 
+// Sample maze to load
+byte sampleMaze[] {
+  B11111111,
+  B10000001,
+  B10000001,
+  B10000001,
+  B10000001,
+  B10000001,
+  B10000001,
+  B11111111
+};
+
+// Sample maze to modify
+byte outputMaze[] {
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000
+};
+
 
 class SAMazeModel {
 
@@ -63,6 +87,21 @@ class SAMazeModel {
   }
 
   /*
+   * Moves the player to an empty spot.
+   */
+  void spawnPlayer() {
+    if (mazeMatrix[0][0] == 0) {
+      playerPosition = {0, 0};
+    } else if (mazeMatrix[7][0] == 0) {
+      playerPosition = {7, 0};
+    } else if (mazeMatrix[0][7] == 0) {
+      playerPosition = {0, 7};
+    } else if (mazeMatrix[7][7] == 0) {
+      playerPosition = {7, 7};
+    }
+  }
+
+  /*
    * Loads the maze from an array of bytes into an array of arrays.
    * 
    * maze - an array of bytes representing the maze for loading into the matix.
@@ -112,13 +151,12 @@ class SAMazeModel {
 
 void setupMaze() {
   // put your setup code here, to run once:
-  SAMazeModel mazeModel = SAMazeModel();
-  mazeModel.loadMaze(sampleMaze);  // Load the sample maze into the arrayMaze
-  mazeModel.saveMaze(outputMaze);  // Save the arrayMaze to the output maze
-  mazeModel.printMaze(outputMaze);
+  //SAMazeModel mazeModel = SAMazeModel();
+  //mazeModel.loadMaze(sampleMaze);  // Load the sample maze into the arrayMaze
+  //mazeModel.saveMaze(outputMaze);  // Save the arrayMaze to the output maze
+  //mazeModel.printMaze(outputMaze);
   
 }
-
 
 
 
