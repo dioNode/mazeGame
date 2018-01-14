@@ -3,6 +3,8 @@
 
 LedControl lc=LedControl(12,11,10,1);  // Pins: DIN,CLK,CS, # of Display connected
 SSDTimer timer = SSDTimer();
+SAMazeModel player;
+
 unsigned long delayTime=300;  // Delay between Frames
 unsigned long lastTick;
 
@@ -14,7 +16,9 @@ void setup() {
   lc.clearDisplay(0);  // Clear Displays
   lc.clearDisplay(1);
   lastTick = millis();
+  player = SAMAzeModel();
   playFrame();
+  
 }
 
 byte mazeWalls[] {
@@ -87,12 +91,13 @@ void playFrame() {
     rotateMaze();
     manu -= 1;
     }
+}
 
+void updateDisplay() {
   for (int i = 0; i < 8; i++) {
     lc.setRow(0, i, mazeWalls[i]);
+    }
   }
-    
-}
 
 void genInlineMaze() {
   for (int row = 3; row < 6; row +=2) {
@@ -100,11 +105,19 @@ void genInlineMaze() {
     }
   }
 
+void togglePlayerPosition(SAMazeModel player) {
+    mazeWalls[player.playerPosition.x] ^= (1<<player.playerPosition.y);
+  }
+
 void loop() {
   unsigned long endTime;
   unsigned long startTime = millis();
   playFrame();
   while (true) {
+    if (millis()-lastTick > 500) {
+      togglePlayerPosition(player);
+      lastTick = millis();
+      }    
     timer.updateTime(); 
     }
   endTime = millis();
