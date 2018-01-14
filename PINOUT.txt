@@ -1,0 +1,37 @@
+# LHS
+
+5V - 
+RES - N/A
+3.3V - 
+5V - 
+GND - 
+GND - 
+VIN - 
+
+A0 - SSD/COM1
+A1 - SSD/COM2
+A2 - SSD/COM3
+A3 - SSD/COM4
+A4 - 
+A5 - 
+
+# RHS
+
+SCL - 
+SDA - 
+AREF - 
+GND - 
+13 - 
+12 - 
+11 - 
+10 - 
+9 - SSD/DP
+8 - SSD/G
+7 - SSD/F
+6 - SSD/E
+5 - SSD/D
+4 - SSD/C
+3 - SSD/B
+2 - SSD/A
+1 (TX) - 
+0 (RX) - 

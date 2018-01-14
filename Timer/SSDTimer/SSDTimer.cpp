@@ -34,7 +34,8 @@ void SSDTimer::setNum(int pin, int value) {
     }
   }
   
-  int toDisplay = ssdNumbers[value%10];
+  int timeMod = pin == 2 ? 6 : 10;
+  int toDisplay = ssdNumbers[value%timeMod];
   char out[32];
   for (int digit = 0; digit<7; digit++) {
     digitalWrite(ssdPins[digit], ((toDisplay>>(7-digit))%2)^1);
@@ -44,7 +45,12 @@ void SSDTimer::setNum(int pin, int value) {
 
 void SSDTimer::displayTime(int millisTime) {
   for (int divisor = 0; divisor < 4; divisor++) {
-    millisTime/=10;
+  	if (divisor == 2) {
+  	  millisTime/=6;
+  	}
+  	else {
+      millisTime/=10;
+    }
     setNum(3-divisor, millisTime);
   }
 }
