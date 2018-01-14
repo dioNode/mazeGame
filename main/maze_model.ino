@@ -3,30 +3,6 @@
  */
 
 
-// Sample maze to load
-byte sampleMaze[] {
-  B11111111,
-  B10000001,
-  B10000001,
-  B10000001,
-  B10000001,
-  B10000001,
-  B10000001,
-  B11111111
-};
-
-// Sample maze to modify
-byte outputMaze[] {
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000
-};
-
 class SAMazeModel {
   
   /*
@@ -117,24 +93,15 @@ class SAMazeModel {
 
 
 
-void setup() {
+void setupMaze() {
   // put your setup code here, to run once:
-  Serial.begin(9600);
-  Serial.println("Maze Model");
-
   SAMazeModel mazeModel = SAMazeModel();
   int arrayMaze[8][8];              // Stores the maze representation
   mazeModel.loadMaze(sampleMaze, arrayMaze);  // Load the sample maze into the arrayMaze
   arrayMaze[4][4] = 1;              // Make a change to the maze
   mazeModel.saveMaze(arrayMaze, outputMaze);  // Save the arrayMaze to the output maze
   
-    
 }
-
-void loop() {
-  // put your main code here, to run repeatedly:
-}
-
 
 
 
