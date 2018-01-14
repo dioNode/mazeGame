@@ -13,7 +13,7 @@ struct SAPoint {
   int y;
 };
 
-class SAMazeGame {
+class SAMazeModel {
 
   private:
     SAPoint playerPosition = {0,0};
@@ -45,27 +45,7 @@ class SAMazeGame {
   
 };
 
-byte mazeWalls[] {
-  B11111111,
-  B10000001,
-  B10010001,
-  B10011001,
-  B10011001,
-  B10010001,
-  B10000001,
-  B11111111
-};
 
-byte mazeRender[] {
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000,
-  B00000000
-};
 
 /*
  * Loads the maze from an array of bytes into an array of arrays.
@@ -102,27 +82,57 @@ void saveMaze(int matrix[8][8], byte maze[8]) {
   }
 }
 
+// Sample maze to load
+byte sampleMaze[] {
+  B11111111,
+  B10000001,
+  B10000001,
+  B10000001,
+  B10000001,
+  B10000001,
+  B10000001,
+  B11111111
+};
+
+// Sample maze to modify
+byte outputMaze[] {
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000,
+  B00000000
+};
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  //loadMaze(mazeWalls);
-  Serial.println();
-//  for (int x = 0; x < 8; x++) {
-//    for (int y = 0; y < 8; y++) {
-//      Serial.print(arrayMaze[x][y]);
-//    }
-//    Serial.println();
-//  }
-  //saveMaze();
-  for (int x = 0; x<8; x++) {
-    Serial.println(mazeRender[x], BIN);
-  }
+  Serial.println("Maze Model");
   
+  int arrayMaze[8][8];              // Stores the maze representation
+  loadMaze(sampleMaze, arrayMaze);  // Load the sample maze into the arrayMaze
+  arrayMaze[4][4] = 1;              // Make a change to the maze
+  saveMaze(arrayMaze, outputMaze);  // Save the arrayMaze to the output maze
+  
+    
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
+}
+
+
+/*
+ * Prints a maze to the console
+ */
+void printMaze(byte maze[8]) {
+  Serial.println();
+  for (int row = 0; row < 8; row++) {
+    Serial.println(maze[row], BIN);
+  }
+  Serial.println();
 }
 
 
