@@ -5,15 +5,19 @@ void displayJoyData(int angle) {
   if (angle > 45) {
       if (angle < 135) {
         // Right
+        movePlayerRight();
         joystickStatus = 4;
       } else if (angle < 225) {
         // Down
+        movePlayerDown()
         joystickStatus = 2;
       } else if (angle < 315) {
         // Left
+        movePlayerLeft();
         joystickStatus = 3;
       } else {
         // Up
+        movePlayerUp();
         joystickStatus = 1;
       } 
     } else {
