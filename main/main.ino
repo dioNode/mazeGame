@@ -6,7 +6,53 @@ SSDTimer timer = SSDTimer();
 
 unsigned long delayTime=300;  // Delay between Frames
 unsigned long lastTick;
+int pinJoyX = 19;
+int pinJoyY = 18;
 
+///////////////////////////////////////// JOYSTICK //////////////////////////////////////////
+int displayJoyData(int angle) {
+  
+  if (angle > 45) {
+      if (angle < 135) {
+        // Right
+        return 4;
+      } else if (angle < 225) {
+        // Down
+        return 2;
+      } else if (angle < 315) {
+        // Left
+        return 3;
+      } else {
+        // Up
+        return 1;
+      } 
+    } else {
+      // Up
+      return 1;
+    }
+}
+
+int processJoystick() {
+  float x = analogRead(pinJoyX) - 512;
+  float y = analogRead(pinJoyY) - 512;
+
+  float norm = sqrt(sq(x)+sq(y));
+  if (norm > 500) {
+    float angle = atan(y/x)*360/(2*M_PI);
+    if (x<0) {
+      angle += 180;
+    } else if (y<0 && x>0) {
+      angle += 360;
+    }
+    return displayJoyData(angle);
+  } else {
+    return 0;
+  }
+}
+
+
+
+///////////////////////////////////////// Player ENTITY ////////////////////////////////////
 
 class SAMazeModel {
 
@@ -32,6 +78,24 @@ class SAMazeModel {
       playerPosition.y--;
     }
   }
+
+  void movePlayer() {
+    int dir = processJoystick();
+    switch (dir) {
+      case 1:
+        movePlayerUp();
+        break;
+      case 2:
+        movePlayerDown();
+        break;
+      case 3:
+        movePlayerLeft();
+        break;
+      case 4:
+        movePlayerRight();
+        break;
+      }
+    }
 
   void movePlayerDown() {
     if (wallAt(playerPosition.x, playerPosition.y+1)) {
@@ -128,6 +192,7 @@ class SAMazeModel {
 
 };
 
+ //////////////////////////////////////////////  MAZE WALLS   ////////////////////////
 void setup() {
   lc.shutdown(0,false);  // Wake up displays
   lc.shutdown(1,false);
@@ -136,6 +201,8 @@ void setup() {
   lc.clearDisplay(0);  // Clear Displays
   lc.clearDisplay(1);
   lastTick = millis();
+  pinMode(pinJoyX, INPUT);
+  pinMode(pinJoyY, INPUT);
   playFrame();
 }
 
@@ -223,18 +290,25 @@ void genInlineMaze() {
     }
   }
 
-void togglePlayerPosition(SAMazeModel player) {
-    mazeWalls[player.playerPosition.x] ^= (1<<player.playerPosition.y);
+void togglePlayerPosition(int x, int y) {
+    mazeWalls[x] ^= (1<<y);
   }
+
+SAMazeModel player = SAMazeModel();
 
 void loop() {
   unsigned long endTime;
   unsigned long startTime = millis();
   playFrame();
-  SAMazeModel player = SAMazeModel();
+  player.loadMaze(mazeWalls);
+  player.spawnPlayer();
   while (true) { // while the game is still going
     if (millis()-lastTick > 500) {
-      togglePlayerPosition(player);
+      if (millis()-lastTick > 250) {
+        togglePlayerPosition(player.playerPosition.x, player.playerPosition.y);
+        }
+      updateDisplay();
+      player.movePlayer();
       lastTick = millis();
       }    
     timer.updateTime(); 
