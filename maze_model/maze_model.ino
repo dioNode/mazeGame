@@ -13,14 +13,6 @@ struct SAPoint {
   int y;
 };
 
-/*
- * Returns the maze 
- */
-void getMaze() {
-  
-}
-
-
 class SAMazeGame {
 
   private:
@@ -75,18 +67,19 @@ byte mazeRender[] {
   B00000000
 };
 
-int arrayMaze[8][8];  // An 8x8 matrix.
-
 /*
  * Loads the maze from an array of bytes into an array of arrays.
+ * 
+ * maze - an array of bytes representing the maze for display.
+ * matrix - an array of integer arrays to load maze information into.
  */
-void loadMaze(byte maze[8]) {
+void loadMaze(byte maze[8], int matrix[8][8]) {
   for (int x = 0; x < 8; x++) {
     for (int y = 0; y < 8; y++) {
       if (maze[x] &  1<<(7-y)) {
-        arrayMaze[x][y] = 1;
+        matrix[x][y] = 1;
       } else {
-        arrayMaze[x][y] = 0;
+        matrix[x][y] = 0;
       }
     }
   }
@@ -94,23 +87,25 @@ void loadMaze(byte maze[8]) {
 
 /*
  * Save the maze into an array of bytes with the player.
+ * 
+ * matrix - an array of integer arrays to get maze information from.
+ * maze - the array of bytes to save maze information to for displaying.
  */
-byte saveMaze() {
+void saveMaze(int matrix[8][8], byte maze[8]) {
   for (int x = 0; x < 8; x++) {
     byte row = 0;
     for (int y = 0; y < 8; y++) {
       row = row << 1;
-      row |= arrayMaze[x][y];
+      row |= matrix[x][y];
     }
-    mazeRender[x] = row;
+    maze[x] = row;
   }
 }
-
 
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
-  loadMaze(mazeWalls);
+  //loadMaze(mazeWalls);
   Serial.println();
 //  for (int x = 0; x < 8; x++) {
 //    for (int y = 0; y < 8; y++) {
@@ -118,7 +113,7 @@ void setup() {
 //    }
 //    Serial.println();
 //  }
-  saveMaze();
+  //saveMaze();
   for (int x = 0; x<8; x++) {
     Serial.println(mazeRender[x], BIN);
   }
