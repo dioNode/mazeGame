@@ -4,6 +4,8 @@
 
 
 class SAMazeModel {
+
+  public:
   
   /*
    * Describes a point that exists with a x and y.
@@ -12,50 +14,66 @@ class SAMazeModel {
     int x;
     int y;
   };
-
-  private:
   
   SAPoint playerPosition = {0,0};
 
-  public:
-  
-  void setPlayerPosition(SAPoint pos) {
-    playerPosition = pos;
-  }
-
-  SAPoint getPlayerPosition() {
-    return playerPosition;
-  }
+  int mazeMatrix[8][8];  // Stores the maze representation
 
   void movePlayerUp() {
-    playerPosition.y++;
+    if (wallAt(playerPosition.x, playerPosition.y-1)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.y--;
+    }
   }
 
   void movePlayerDown() {
-    playerPosition.y--;
+    if (wallAt(playerPosition.x, playerPosition.y+1)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.y++;
+    }
   }
 
   void movePlayerLeft() {
-    playerPosition.x--;
+    if (wallAt(playerPosition.x-1, playerPosition.y)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.x--;
+    }
   }
 
   void movePlayerRight() {
-    playerPosition.x++;
+    if (wallAt(playerPosition.x+1, playerPosition.y)) {
+      // Wall at this location
+    } else {
+      // No wall at this location
+      playerPosition.x++;
+    }
+  }
+
+  /*
+   * Checks the matrix for a wall at the specified position
+   */
+  bool wallAt(int x, int y) {
+    return mazeMatrix[x][y] == 1;
   }
 
   /*
    * Loads the maze from an array of bytes into an array of arrays.
    * 
-   * maze - an array of bytes representing the maze for display.
-   * matrix - an array of integer arrays to load maze information into.
+   * maze - an array of bytes representing the maze for loading into the matix.
    */
-  void loadMaze(byte maze[8], int matrix[8][8]) {
+  void loadMaze(byte maze[8]) {
     for (int x = 0; x < 8; x++) {
       for (int y = 0; y < 8; y++) {
         if (maze[x] &  1<<(7-y)) {
-          matrix[x][y] = 1;
+          mazeMatrix[x][y] = 1;
         } else {
-          matrix[x][y] = 0;
+          mazeMatrix[x][y] = 0;
         }
       }
     }
@@ -64,15 +82,14 @@ class SAMazeModel {
   /*
    * Save the maze into an array of bytes with the player.
    * 
-   * matrix - an array of integer arrays to get maze information from.
    * maze - the array of bytes to save maze information to for displaying.
    */
-  void saveMaze(int matrix[8][8], byte maze[8]) {
+  void saveMaze(byte maze[8]) {
     for (int x = 0; x < 8; x++) {
       byte row = 0;
       for (int y = 0; y < 8; y++) {
         row = row << 1;
-        row |= matrix[x][y];
+        row |= mazeMatrix[x][y];
       }
       maze[x] = row;
     }
@@ -96,10 +113,9 @@ class SAMazeModel {
 void setupMaze() {
   // put your setup code here, to run once:
   SAMazeModel mazeModel = SAMazeModel();
-  int arrayMaze[8][8];              // Stores the maze representation
-  mazeModel.loadMaze(sampleMaze, arrayMaze);  // Load the sample maze into the arrayMaze
-  arrayMaze[4][4] = 1;              // Make a change to the maze
-  mazeModel.saveMaze(arrayMaze, outputMaze);  // Save the arrayMaze to the output maze
+  mazeModel.loadMaze(sampleMaze);  // Load the sample maze into the arrayMaze
+  mazeModel.saveMaze(outputMaze);  // Save the arrayMaze to the output maze
+  mazeModel.printMaze(outputMaze);
   
 }
 
